@@ -11,6 +11,7 @@
     This configuration file controls the hunting system for RedM.
     Players can hunt animals, skin them, and sell pelts/meat to butchers.
     Each animal has configurable skin/butcher rewards and sell prices.
+    🐺 LXR Hunting — Advanced Hunting System for RedM
 
     ═══════════════════════════════════════════════════════════════════════════════
     SERVER INFORMATION
@@ -36,6 +37,12 @@
     - QBR Core (Compatible)
     - QR Core (Compatible)
     - Standalone (Compatible)
+
+    Framework Support:
+    - LXR Core   (Primary)
+    - RSG Core   (Primary)
+    - VORP Core  (Supported / Legacy)
+    - Standalone (Fallback)
 
     ═══════════════════════════════════════════════════════════════════════════════
     CREDITS
@@ -74,6 +81,66 @@ if currentResourceName ~= REQUIRED_RESOURCE_NAME then
 end
 
 Config = Config or {}
+Config = {}
+
+-- ████████████████████████████████████████████████████████████████████████████████
+-- ████████████████████████ SERVER BRANDING & INFO ████████████████████████████████
+-- ████████████████████████████████████████████████████████████████████████████████
+
+Config.ServerInfo = {
+    name      = 'The Land of Wolves 🐺',
+    developer = 'iBoss21 / The Lux Empire',
+    website   = 'https://www.wolves.land',
+    discord   = 'https://discord.gg/CrKcWdfd3A',
+    store     = 'https://theluxempire.tebex.io',
+    github    = 'https://github.com/iBoss21',
+    tags      = {'RedM', 'Hunting', 'SeriousRP', 'Whitelist', 'Economy', 'Survival'},
+}
+
+-- ████████████████████████████████████████████████████████████████████████████████
+-- ████████████████████████ FRAMEWORK CONFIGURATION ███████████████████████████████
+-- ████████████████████████████████████████████████████████████████████████████████
+
+--[[
+    Framework Priority (in order):
+    1. LXR-Core  (Primary)
+    2. RSG-Core  (Primary)
+    3. VORP Core (Supported / Legacy)
+    4. Standalone (Fallback)
+]]
+
+Config.Framework = 'auto' -- 'auto' or manual: 'lxr-core', 'rsg-core', 'vorp_core', 'standalone'
+
+Config.FrameworkSettings = {
+    ['lxr-core'] = {
+        resource  = 'lxr-core',
+        inventory = 'lxr-inventory',
+        menu      = 'lxr-menu',
+        input     = 'lxr-input',
+    },
+    ['rsg-core'] = {
+        resource  = 'rsg-core',
+        inventory = 'rsg-inventory',
+        menu      = 'rsg-menu',
+        input     = 'rsg-input',
+    },
+    ['vorp_core'] = {
+        resource  = 'vorp_core',
+        inventory = 'vorp_inventory',
+        menu      = 'vorp_menu',
+        input     = 'vorp_input',
+    },
+    ['standalone'] = {
+        resource  = nil,
+        inventory = nil,
+        menu      = nil,
+        input     = nil,
+    },
+}
+
+-- ████████████████████████████████████████████████████████████████████████████████
+-- ████████████████████████ ITEMS CONFIGURATION ███████████████████████████████████
+-- ████████████████████████████████████████████████████████████████████████████████
 
 -- ████████████████████████████████████████████████████████████████████████████████
 -- ████████████████████████ SERVER BRANDING & INFO ████████████████████████████████

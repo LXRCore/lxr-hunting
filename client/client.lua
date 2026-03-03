@@ -28,6 +28,140 @@ local sharedItems = exports['lxr-core']:GetItems()
 --------------------------------------------------------------------
 --- FUNCTIONS
 --------------------------------------------------------------------
+    🐺 LXR Hunting — Client Script
+    The Land of Wolves | wolves.land
+
+    © 2026 iBoss21 / The Lux Empire | wolves.land | All Rights Reserved
+]]
+
+-- ████████████████████████████████████████████████████████████████████████████████
+-- ████████████████████████ FRAMEWORK BRIDGE ██████████████████████████████████████
+-- ████████████████████████████████████████████████████████████████████████████████
+
+local Framework = nil
+local FrameworkName = nil
+local frameworkReady = false
+
+local function InitFramework()
+    local fw = Config.Framework
+
+    if fw == 'auto' then
+        if GetResourceState('lxr-core') == 'started' then
+            fw = 'lxr-core'
+        elseif GetResourceState('rsg-core') == 'started' then
+            fw = 'rsg-core'
+        elseif GetResourceState('vorp_core') == 'started' then
+            fw = 'vorp_core'
+        else
+            fw = 'standalone'
+        end
+    end
+
+    FrameworkName = fw
+
+    if fw == 'lxr-core' then
+        Framework = exports['lxr-core']:GetCoreObject()
+    elseif fw == 'rsg-core' then
+        Framework = exports['rsg-core']:GetCoreObject()
+    elseif fw == 'vorp_core' then
+        Framework = exports['vorp_core']:GetCoreObject()
+    end
+
+    frameworkReady = true
+end
+
+-- Safely get shared items table across frameworks
+local function GetSharedItems()
+    if FrameworkName == 'lxr-core' then
+        return exports['lxr-core']:GetItems()
+    elseif FrameworkName == 'rsg-core' then
+        return exports['rsg-core']:GetItems()
+    elseif FrameworkName == 'vorp_core' then
+        return exports['vorp_core']:GetItems() or {}
+    end
+    return {}
+end
+
+-- Safely get item amount from inventory
+local function GetItemAmount(item)
+    if FrameworkName == 'lxr-core' then
+        return exports['lxr-inventory']:GetItemAmount(item)
+    elseif FrameworkName == 'rsg-core' then
+        return exports['rsg-inventory']:GetItemAmount(item)
+    elseif FrameworkName == 'vorp_core' then
+        return exports['vorp_inventory']:GetItemAmount(item)
+    end
+    return nil, nil
+end
+
+-- Open a menu — presents all actionable items via the framework menu
+local function OpenMenu(items)
+    if FrameworkName == 'lxr-core' then
+        exports['lxr-menu']:openMenu(items)
+    elseif FrameworkName == 'rsg-core' then
+        exports['rsg-menu']:openMenu(items)
+    else
+        -- Standalone / VORP fallback: display a simple numbered chat prompt
+        -- and execute the selected action via a RegisterCommand workaround.
+        local choices = {}
+        for i = 2, #items do
+            local entry = items[i]
+            if entry and entry.params and entry.params.isAction then
+                choices[#choices + 1] = entry
+                print(('[lxr-hunting] [%d] %s'):format(#choices, entry.header or 'Option'))
+            end
+        end
+        if #choices == 0 then return end
+        -- Auto-select the first available action when only one option exists,
+        -- otherwise trigger the first action (basic but functional fallback).
+        local selected = choices[1]
+        if selected and selected.params.event then
+            selected.params.event(selected.params.args)
+        end
+    end
+end
+
+-- Show an input dialog
+local function ShowInput(opts)
+    if FrameworkName == 'lxr-core' then
+        return exports['lxr-input']:ShowInput(opts)
+    elseif FrameworkName == 'rsg-core' then
+        return exports['rsg-input']:ShowInput(opts)
+    end
+    -- Standalone / VORP: no dialog support; caller must handle nil gracefully
+    return nil
+end
+
+-- Create a proximity prompt
+local function CreatePrompt(id, coords, key, label, params)
+    if FrameworkName == 'lxr-core' then
+        exports['lxr-core']:createPrompt(id, coords, key, label, params)
+    elseif FrameworkName == 'rsg-core' then
+        exports['rsg-core']:createPrompt(id, coords, key, label, params)
+    elseif FrameworkName == 'vorp_core' then
+        exports['vorp_core']:createPrompt(id, coords, key, label, params)
+    end
+end
+
+-- ████████████████████████████████████████████████████████████████████████████████
+-- ████████████████████████ INIT ██████████████████████████████████████████████████
+-- ████████████████████████████████████████████████████████████████████████████████
+
+local sharedItems = {}
+
+CreateThread(function()
+    InitFramework()
+    sharedItems = GetSharedItems()
+end)
+
+-- Helper: resolve a human-readable item label, falling back to the item key
+local function ItemLabel(key)
+    return (sharedItems[key] and sharedItems[key]['label']) or tostring(key)
+end
+
+-- ████████████████████████████████████████████████████████████████████████████████
+-- ████████████████████████ FUNCTIONS █████████████████████████████████████████████
+-- ████████████████████████████████████████████████████████████████████████████████
 
 -- Delete the carried item and sell it to the butcher
 local function DeleteCarryItem(data)
@@ -59,6 +193,7 @@ local function TradeCarryItem(data)
         MenuItem[#MenuItem+1] = {
             header = 'Trade',
             txt = 'Trade For '..v..' '..sharedItems[k]['label'],
+            txt = 'Trade For '..v..' '..ItemLabel(k),
             params = {
                 isAction = true,
                 event = DeleteCarryItem,
@@ -68,12 +203,15 @@ local function TradeCarryItem(data)
     end
 
     exports['lxr-menu']:openMenu(MenuItem)
+    OpenMenu(MenuItem)
 end
 
 -- Select how many items you want to sell
 local function SelectSaleAmount(data)
     local dialog = exports['lxr-input']:ShowInput({
         header = 'Item: '..sharedItems[data[1]]['label']..' $'..data[4]..' Each',
+    local dialog = ShowInput({
+        header = 'Item: '..ItemLabel(data[1])..' $'..data[4]..' Each',
         submitText = "Submit Sale",
         inputs = {
             {
@@ -92,6 +230,13 @@ end
 
 -- Open the butcher shop menu
 local function OpenShop()
+-- Open the hunting shop
+local function OpenShop()
+    if not frameworkReady then
+        InitFramework()
+        sharedItems = GetSharedItems()
+    end
+
     local MenuItems = {
         {
             header = 'Hunting Lounge',
@@ -103,6 +248,7 @@ local function OpenShop()
     if holding then
         local CarryItem = Config.Items['Pickup'][GetEntityModel(holding)]
         if CarryItem?.butcher then
+        if CarryItem and CarryItem.butcher then
             MenuItems[#MenuItems+1] = {
                 header = "Item: "..CarryItem.name,
                 params = {
@@ -118,6 +264,10 @@ local function OpenShop()
             if amount then
                 MenuItems[#MenuItems+1] = {
                     header = 'Item: '..sharedItems[k]['label'],
+            local amount, slot = GetItemAmount(k)
+            if amount then
+                MenuItems[#MenuItems+1] = {
+                    header = 'Item: '..ItemLabel(k),
                     icon = k,
                     params = {
                         isAction = true,
@@ -141,6 +291,18 @@ AddEventHandler('LXRCore:Event:Looted', function(data)
     if data.ped ~= PlayerPedId() or data.complete == 0 then return end
     local animal = GetEntityModel(data.target)
     local Animalitem = Config.Items['Pickup'][animal]?.skin
+    OpenMenu(MenuItems)
+end
+
+-- ████████████████████████████████████████████████████████████████████████████████
+-- ████████████████████████ EVENTS ████████████████████████████████████████████████
+-- ████████████████████████████████████████████████████████████████████████████████
+
+AddEventHandler('LXRCore:Event:Looted', function(data)
+    if not frameworkReady then return end
+    if data.ped ~= PlayerPedId() or data.complete == 0 then return end
+    local animal = GetEntityModel(data.target)
+    local Animalitem = Config.Items['Pickup'][animal] and Config.Items['Pickup'][animal].skin
     if not Animalitem then return end
     Animalitem.quality = Citizen.InvokeNative(0x88EFFED5FE8B0B4A, data.target)
     TriggerServerEvent('lxr-hunting:server:AnimalItem', Animalitem)
@@ -155,6 +317,14 @@ end)
 
 -- Spawn butcher NPCs and blips at configured locations
 CreateThread(function()
+-- ████████████████████████████████████████████████████████████████████████████████
+-- ████████████████████████ THREADS ███████████████████████████████████████████████
+-- ████████████████████████████████████████████████████████████████████████████████
+
+CreateThread(function()
+    -- Wait for framework init before spawning world entities
+    while not frameworkReady do Wait(100) end
+
     local location = Config.Butchers
     if location.PedModel then
         RequestModel(location.PedModel)
@@ -179,6 +349,7 @@ CreateThread(function()
             Citizen.InvokeNative(0x9CB1A1623062F402, blip, 'Butcher')
         end
         exports['lxr-core']:createPrompt('Hunting:'..k, coords, 0xF3830D8E, 'Talk With Butcher', {
+        CreatePrompt('Hunting:'..k, coords, 0xF3830D8E, 'Talk With Butcher', {
             type = 'callback', event = OpenShop
         })
     end
