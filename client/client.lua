@@ -6,6 +6,28 @@
     ███████╗██╔╝ ██╗██║  ██║      ██║  ██║╚██████╔╝██║ ╚████║   ██║   ██║██║ ╚████║╚██████╔╝
     ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝      ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   ╚═╝╚═╝  ╚═══╝ ╚═════╝
 
+    🐺 LXR Hunting System - Client Script
+
+    ═══════════════════════════════════════════════════════════════════════════════
+    SERVER INFORMATION
+    ═══════════════════════════════════════════════════════════════════════════════
+
+    Server:    The Land of Wolves 🐺
+    Developer: iBoss21 / The Lux Empire
+    Website:   https://www.wolves.land
+    Discord:   https://discord.gg/CrKcWdfd3A
+    Store:     https://theluxempire.tebex.io
+
+    ═══════════════════════════════════════════════════════════════════════════════
+
+    © 2026 iBoss21 / The Lux Empire | wolves.land | All Rights Reserved
+]]
+
+local sharedItems = exports['lxr-core']:GetItems()
+
+--------------------------------------------------------------------
+--- FUNCTIONS
+--------------------------------------------------------------------
     🐺 LXR Hunting — Client Script
     The Land of Wolves | wolves.land
 
@@ -170,6 +192,7 @@ local function TradeCarryItem(data)
     for k, v in pairs(itemData.butcher.items) do
         MenuItem[#MenuItem+1] = {
             header = 'Trade',
+            txt = 'Trade For '..v..' '..sharedItems[k]['label'],
             txt = 'Trade For '..v..' '..ItemLabel(k),
             params = {
                 isAction = true,
@@ -179,11 +202,14 @@ local function TradeCarryItem(data)
         }
     end
 
+    exports['lxr-menu']:openMenu(MenuItem)
     OpenMenu(MenuItem)
 end
 
 -- Select how many items you want to sell
 local function SelectSaleAmount(data)
+    local dialog = exports['lxr-input']:ShowInput({
+        header = 'Item: '..sharedItems[data[1]]['label']..' $'..data[4]..' Each',
     local dialog = ShowInput({
         header = 'Item: '..ItemLabel(data[1])..' $'..data[4]..' Each',
         submitText = "Submit Sale",
@@ -202,6 +228,8 @@ local function SelectSaleAmount(data)
     TriggerServerEvent('lxr-hunting:server:SellInvItems', dialog)
 end
 
+-- Open the butcher shop menu
+local function OpenShop()
 -- Open the hunting shop
 local function OpenShop()
     if not frameworkReady then
@@ -219,6 +247,7 @@ local function OpenShop()
     local holding = Citizen.InvokeNative(0xD806CD2A4F2C2996, PlayerPedId())
     if holding then
         local CarryItem = Config.Items['Pickup'][GetEntityModel(holding)]
+        if CarryItem?.butcher then
         if CarryItem and CarryItem.butcher then
             MenuItems[#MenuItems+1] = {
                 header = "Item: "..CarryItem.name,
@@ -231,6 +260,10 @@ local function OpenShop()
         end
     else
         for k, v in pairs(Config.Items['Inv']) do
+            local amount, slot = exports['lxr-inventory']:GetItemAmount(k)
+            if amount then
+                MenuItems[#MenuItems+1] = {
+                    header = 'Item: '..sharedItems[k]['label'],
             local amount, slot = GetItemAmount(k)
             if amount then
                 MenuItems[#MenuItems+1] = {
@@ -246,6 +279,18 @@ local function OpenShop()
         end
     end
 
+    exports['lxr-menu']:openMenu(MenuItems)
+end
+
+--------------------------------------------------------------------
+--- EVENTS
+--------------------------------------------------------------------
+
+-- Handle looting of animals
+AddEventHandler('LXRCore:Event:Looted', function(data)
+    if data.ped ~= PlayerPedId() or data.complete == 0 then return end
+    local animal = GetEntityModel(data.target)
+    local Animalitem = Config.Items['Pickup'][animal]?.skin
     OpenMenu(MenuItems)
 end
 
@@ -266,6 +311,12 @@ AddEventHandler('LXRCore:Event:Looted', function(data)
     if holding then DeleteEntity(holding) end
 end)
 
+--------------------------------------------------------------------
+--- THREADS
+--------------------------------------------------------------------
+
+-- Spawn butcher NPCs and blips at configured locations
+CreateThread(function()
 -- ████████████████████████████████████████████████████████████████████████████████
 -- ████████████████████████ THREADS ███████████████████████████████████████████████
 -- ████████████████████████████████████████████████████████████████████████████████
@@ -297,6 +348,7 @@ CreateThread(function()
             SetBlipSprite(blip, location.Blip, true)
             Citizen.InvokeNative(0x9CB1A1623062F402, blip, 'Butcher')
         end
+        exports['lxr-core']:createPrompt('Hunting:'..k, coords, 0xF3830D8E, 'Talk With Butcher', {
         CreatePrompt('Hunting:'..k, coords, 0xF3830D8E, 'Talk With Butcher', {
             type = 'callback', event = OpenShop
         })

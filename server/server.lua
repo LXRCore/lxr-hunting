@@ -6,6 +6,30 @@
     ███████╗██╔╝ ██╗██║  ██║      ██║  ██║╚██████╔╝██║ ╚████║   ██║   ██║██║ ╚████║╚██████╔╝
     ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝      ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   ╚═╝╚═╝  ╚═══╝ ╚═════╝
 
+    🐺 LXR Hunting System - Server Script
+
+    ═══════════════════════════════════════════════════════════════════════════════
+    SERVER INFORMATION
+    ═══════════════════════════════════════════════════════════════════════════════
+
+    Server:    The Land of Wolves 🐺
+    Developer: iBoss21 / The Lux Empire
+    Website:   https://www.wolves.land
+    Discord:   https://discord.gg/CrKcWdfd3A
+    Store:     https://theluxempire.tebex.io
+
+    ═══════════════════════════════════════════════════════════════════════════════
+
+    © 2026 iBoss21 / The Lux Empire | wolves.land | All Rights Reserved
+]]
+
+RegisterNetEvent('lxr-hunting:server:AnimalItem', function(data)
+    local src = source
+    local Player = exports['lxr-core']:GetPlayer(src)
+    if data.quality == nil or not Player then return end
+    if Player.Functions.AddItem(data.item, data.amount or 1) then
+        if data.quality then
+            Player.Functions.AddXp('hunting', data.quality)
     🐺 LXR Hunting — Server Script
     The Land of Wolves | wolves.land
 
@@ -123,11 +147,14 @@ end)
 
 RegisterNetEvent('lxr-hunting:server:SellInvItems', function(data)
     local src = source
+    local Player = exports['lxr-core']:GetPlayer(src)
     local Player = GetPlayer(src)
     local item, slot = table.unpack(data.data)
     if not (item and slot and Player) then return end
     local GiveItem = Config.Items['Inv'][item]
     if not GiveItem then return end
+    if Player.Functions.RemoveItem(item, data.amount, slot) then
+        Player.Functions.AddMoney('cash', GiveItem * data.amount, 'Sold-Hunting-Items')
     if RemoveItem(Player, item, data.amount, slot) then
         AddMoney(Player, 'cash', GiveItem * data.amount, 'Sold-Hunting-Items')
     end
@@ -135,6 +162,12 @@ end)
 
 RegisterNetEvent('lxr-hunting:server:SellCarryItems', function(data)
     local src = source
+    local Player = exports['lxr-core']:GetPlayer(src)
+    if not Player then return end
+    if type(data) == 'table' then
+        return Player.Functions.AddItem(data.item, data.amount)
+    end
+    Player.Functions.AddMoney('cash', tonumber(data), 'Sold-Hunting-Items')
     local Player = GetPlayer(src)
     if not Player then return end
     if type(data) == 'table' then
