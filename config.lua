@@ -1,370 +1,111 @@
 --[[
-    ██╗     ██╗  ██╗██████╗        ██╗  ██╗██╗   ██╗███╗   ██╗████████╗██╗███╗   ██╗ ██████╗
+    ██╗     ██╗  ██╗██████╗       ██╗  ██╗██╗   ██╗███╗   ██╗████████╗██╗███╗   ██╗ ██████╗
     ██║     ╚██╗██╔╝██╔══██╗      ██║  ██║██║   ██║████╗  ██║╚══██╔══╝██║████╗  ██║██╔════╝
     ██║      ╚███╔╝ ██████╔╝█████╗███████║██║   ██║██╔██╗ ██║   ██║   ██║██╔██╗ ██║██║  ███╗
     ██║      ██╔██╗ ██╔══██╗╚════╝██╔══██║██║   ██║██║╚██╗██║   ██║   ██║██║╚██╗██║██║   ██║
     ███████╗██╔╝ ██╗██║  ██║      ██║  ██║╚██████╔╝██║ ╚████║   ██║   ██║██║ ╚████║╚██████╔╝
     ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝      ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   ╚═╝╚═╝  ╚═══╝ ╚═════╝
 
-    🐺 LXR Hunting System - Configuration
+    LXR Core - Hunting
 
-    This configuration file controls the hunting system for RedM.
-    Players can hunt animals, skin them, and sell pelts/meat to butchers.
-    Each animal has configurable skin/butcher rewards and sell prices.
-    🐺 LXR Hunting — Advanced Hunting System for RedM
+    The game spawns the animals and judges the kill: it knows how good the
+    animal was (GetPedQuality) and how clean the shot (GetPedDamageCleanliness).
+    This resource turns that into a pelt with a quality grade, meat by the
+    size of the beast, the odd trophy, and a carcass you can sell whole. A
+    skinned animal is marked on the entity itself, so it is skinned once.
+    Every item here is the core catalog's; the trapper and the butcher buy
+    them on their usual shelves.
 
-    ═══════════════════════════════════════════════════════════════════════════════
-    SERVER INFORMATION
-    ═══════════════════════════════════════════════════════════════════════════════
+    Brand:       LXRCore — Lux Empire eXperience RedM Core
+    Product:     wolves.land / The Land of Wolves
+    Developer:   iBoss21 / LXRCore
+    Website:     https://www.lxrcore.com
+    Discord:     https://discord.gg/ZHMKVYyhBa (development)
+    GitHub:      https://github.com/LXRCore
 
-    Server:      The Land of Wolves 🐺
-    Developer:   iBoss21 / The Lux Empire
-    Website:     https://www.wolves.land
-    Discord:     https://discord.gg/CrKcWdfd3A
-    GitHub:      https://github.com/iBoss21
-    Store:       https://theluxempire.tebex.io
+    Version: 3.0.0
+    Performance Target: 0.00 ms idle (the prompt is lxr-interact's; nothing scans here)
 
-    ═══════════════════════════════════════════════════════════════════════════════
-
-    Version: 1.0.0
-    Performance Target: Optimized for minimal server overhead and client FPS impact
-
-    Framework Support:
-    - LXR Core (Primary)
-    - RSG Core (Compatible)
-    - VORP Core (Compatible)
-    - RedEM:RP (Compatible)
-    - QBR Core (Compatible)
-    - QR Core (Compatible)
-    - Standalone (Compatible)
-
-    Framework Support:
-    - LXR Core   (Primary)
-    - RSG Core   (Primary)
-    - VORP Core  (Supported / Legacy)
-    - Standalone (Fallback)
-
-    ═══════════════════════════════════════════════════════════════════════════════
-    CREDITS
-    ═══════════════════════════════════════════════════════════════════════════════
-
-    Script Author: iBoss21 / The Lux Empire for The Land of Wolves
-
-    © 2026 iBoss21 / The Lux Empire | wolves.land | All Rights Reserved
+    © 2026 iBoss21 / LXRCore | lxrcore.com | All Rights Reserved
 ]]
-
--- ═══════════════════════════════════════════════════════════════════════════════
--- 🐺 RESOURCE NAME PROTECTION - RUNTIME CHECK
--- ═══════════════════════════════════════════════════════════════════════════════
-
-local REQUIRED_RESOURCE_NAME = "lxr-hunting"
-local currentResourceName = GetCurrentResourceName()
-
-if currentResourceName ~= REQUIRED_RESOURCE_NAME then
-    error(string.format([[
-
-        ═══════════════════════════════════════════════════════════════════════════════
-        ❌ CRITICAL ERROR: RESOURCE NAME MISMATCH ❌
-        ═══════════════════════════════════════════════════════════════════════════════
-
-        Expected: %s
-        Got: %s
-
-        This resource is branded and must maintain the correct name.
-        Rename the folder to "%s" to continue.
-
-        🐺 wolves.land - The Land of Wolves
-
-        ═══════════════════════════════════════════════════════════════════════════════
-
-    ]], REQUIRED_RESOURCE_NAME, currentResourceName, REQUIRED_RESOURCE_NAME))
-end
 
 Config = Config or {}
-Config = {}
 
 -- ████████████████████████████████████████████████████████████████████████████████
--- ████████████████████████ SERVER BRANDING & INFO ████████████████████████████████
+-- ████████████████████████ LANGUAGE ██████████████████████████████████████████████
 -- ████████████████████████████████████████████████████████████████████████████████
+Config.Lang = 'en'
 
-Config.ServerInfo = {
-    name      = 'The Land of Wolves 🐺',
-    developer = 'iBoss21 / The Lux Empire',
-    website   = 'https://www.wolves.land',
-    discord   = 'https://discord.gg/CrKcWdfd3A',
-    store     = 'https://theluxempire.tebex.io',
-    github    = 'https://github.com/iBoss21',
-    tags      = {'RedM', 'Hunting', 'SeriousRP', 'Whitelist', 'Economy', 'Survival'},
+-- ████████████████████████████████████████████████████████████████████████████████
+-- ████████████████████████ ANIMALS ═══════════════════════════════════════════════
+-- ████████████████████████████████████████████████████████████████████████████████
+-- model → what comes off it. size: small (carcass_small), bird (carcass_bird),
+-- medium (carcass_medium), large (skinned where it fell, no carcass item).
+-- extras: { item, chance 0..1, amount? }. Every item is a core catalog item.
+local function A(models, label, size, pelt, meat, meatMin, meatMax, extras)
+    return { models = models, label = label, size = size, pelt = pelt, meat = meat, meatMin = meatMin, meatMax = meatMax, extras = extras or {} }
+end
+Config.Animals = {
+    deer      = A({ 'a_c_deer_01' }, 'Whitetail Deer', 'large', 'pelt_deer', 'meat_venison', 2, 4, { { item = 'antlers', chance = 0.5 }, { item = 'sinew', chance = 0.6, amount = 2 } }),
+    elk       = A({ 'a_c_elk_01' }, 'Elk', 'large', 'pelt_elk', 'meat_big_game', 3, 5, { { item = 'antlers_elk', chance = 0.5 }, { item = 'sinew', chance = 0.7, amount = 3 } }),
+    moose     = A({ 'a_c_moose_01' }, 'Moose', 'large', 'pelt_moose', 'meat_big_game', 4, 6, { { item = 'antlers_moose', chance = 0.5 } }),
+    pronghorn = A({ 'a_c_pronghorn_01' }, 'Pronghorn', 'large', 'pelt_pronghorn', 'meat_venison', 2, 3, { { item = 'sinew', chance = 0.5, amount = 2 } }),
+    bighorn   = A({ 'a_c_bighornram_01' }, 'Bighorn', 'large', 'pelt_bighorn', 'meat_mutton', 2, 4, { { item = 'horn_bighorn', chance = 0.6 } }),
+    bison     = A({ 'a_c_buffalo_01', 'a_c_buffalo_tatanka_01' }, 'Bison', 'large', 'pelt_bison', 'meat_big_game', 5, 8, { { item = 'horn_bison', chance = 0.7 }, { item = 'animal_fat', chance = 0.9, amount = 3 } }),
+    bear      = A({ 'a_c_bear_01', 'a_c_bearblack_01' }, 'Bear', 'large', 'pelt_bear', 'meat_big_game', 4, 7, { { item = 'claw_bear', chance = 0.5 }, { item = 'tooth_bear', chance = 0.35 }, { item = 'animal_fat', chance = 0.9, amount = 4 } }),
+    cougar    = A({ 'a_c_cougar_01' }, 'Cougar', 'large', 'pelt_cougar', 'meat_stringy', 2, 3, { { item = 'fang_cougar', chance = 0.4 } }),
+    panther   = A({ 'a_c_panther_01' }, 'Panther', 'large', 'pelt_panther', 'meat_stringy', 2, 3, { { item = 'fang_cougar', chance = 0.4 } }),
+    wolf      = A({ 'a_c_wolf', 'a_c_wolf_medium', 'a_c_wolf_small' }, 'Wolf', 'medium', 'pelt_wolf', 'meat_stringy', 1, 3, { { item = 'bone', chance = 0.5, amount = 2 } }),
+    coyote    = A({ 'a_c_coyote_01' }, 'Coyote', 'medium', 'pelt_coyote', 'meat_stringy', 1, 2),
+    fox       = A({ 'a_c_fox_01' }, 'Fox', 'medium', 'pelt_fox', 'meat_stringy', 1, 1),
+    boar      = A({ 'a_c_boar_01' }, 'Boar', 'large', 'pelt_boar', 'meat_pork', 2, 4, { { item = 'animal_fat', chance = 0.8, amount = 2 } }),
+    pig       = A({ 'a_c_pig_01' }, 'Pig', 'large', 'pelt_boar', 'meat_pork', 3, 5, { { item = 'animal_fat', chance = 0.9, amount = 3 } }),
+    beaver    = A({ 'a_c_beaver_01' }, 'Beaver', 'medium', 'pelt_beaver', 'meat_gamey', 1, 2, { { item = 'tail_beaver', chance = 0.8 } }),
+    rabbit    = A({ 'a_c_rabbit_01' }, 'Rabbit', 'small', 'pelt_rabbit', 'meat_gamey', 1, 1),
+    raccoon   = A({ 'a_c_raccoon_01' }, 'Raccoon', 'small', 'pelt_raccoon', 'meat_gamey', 1, 1),
+    badger    = A({ 'a_c_badger_01' }, 'Badger', 'small', 'pelt_badger', 'meat_gamey', 1, 1),
+    muskrat   = A({ 'a_c_muskrat_01' }, 'Muskrat', 'small', 'pelt_muskrat', 'meat_gamey', 1, 1),
+    skunk     = A({ 'a_c_skunk_01' }, 'Skunk', 'small', 'pelt_skunk', 'meat_gamey', 1, 1),
+    opossum   = A({ 'a_c_possum_01' }, 'Opossum', 'small', 'pelt_opossum', 'meat_gamey', 1, 1),
+    squirrel  = A({ 'a_c_squirrel_01' }, 'Squirrel', 'small', 'pelt_squirrel', 'meat_gamey', 1, 1),
+    goat      = A({ 'a_c_goat_01' }, 'Goat', 'medium', 'pelt_goat', 'meat_mutton', 1, 2),
+    sheep     = A({ 'a_c_sheep_01' }, 'Sheep', 'large', 'pelt_sheep', 'meat_mutton', 2, 3),
+    cow       = A({ 'a_c_cow', 'a_c_bull_01', 'a_c_ox_01' }, 'Cattle', 'large', 'hide_cow', 'meat_beef', 4, 7, { { item = 'animal_fat', chance = 0.9, amount = 3 }, { item = 'bone', chance = 0.7, amount = 3 } }),
+    gator     = A({ 'a_c_alligator_01', 'a_c_alligator_02', 'a_c_alligator_03' }, 'Alligator', 'large', 'hide_gator', 'meat_gator', 2, 4, { { item = 'tooth_gator', chance = 0.6 } }),
+    snake     = A({ 'a_c_snake_01', 'a_c_snakeblacktailrattle_01', 'a_c_snakeferdelance_01', 'a_c_snakeredboa_01', 'a_c_snakewater_01', 'a_c_snake_pelican_01' }, 'Snake', 'small', 'hide_snake', 'meat_gristly', 1, 1),
+    turkey    = A({ 'a_c_turkey_01', 'a_c_turkey_02' }, 'Turkey', 'bird', nil, 'meat_plump_bird', 1, 2, { { item = 'feather_turkey', chance = 0.9, amount = 3 } }),
+    duck      = A({ 'a_c_duck_01' }, 'Duck', 'bird', nil, 'meat_plump_bird', 1, 1),
+    goose     = A({ 'a_c_goosecanada_01' }, 'Goose', 'bird', nil, 'meat_plump_bird', 1, 2),
+    pheasant  = A({ 'a_c_pheasant_01' }, 'Pheasant', 'bird', nil, 'meat_plump_bird', 1, 1),
+    chicken   = A({ 'a_c_chicken_01' }, 'Chicken', 'bird', nil, 'meat_plump_bird', 1, 1),
+    heron     = A({ 'a_c_heron_01' }, 'Heron', 'bird', nil, 'meat_gristly', 1, 1, { { item = 'feather_heron', chance = 0.6 } }),
+    egret     = A({ 'a_c_egret_01' }, 'Egret', 'bird', nil, 'meat_gristly', 1, 1, { { item = 'feather_egret', chance = 0.6 } }),
+    spoonbill = A({ 'a_c_spoonbill_01' }, 'Spoonbill', 'bird', nil, 'meat_gristly', 1, 1, { { item = 'feather_spoonbill', chance = 0.6 } }),
+    eagle     = A({ 'a_c_eagle_01' }, 'Eagle', 'bird', nil, 'meat_gristly', 1, 1, { { item = 'feather_eagle', chance = 0.5 } }),
+    hawk      = A({ 'a_c_hawk_01' }, 'Hawk', 'bird', nil, 'meat_gristly', 1, 1, { { item = 'feather_hawk', chance = 0.6 } }),
+    owl       = A({ 'a_c_owl_01' }, 'Owl', 'bird', nil, 'meat_gristly', 1, 1, { { item = 'feather_owl', chance = 0.6 } }),
+    crow      = A({ 'a_c_crow_01', 'a_c_raven_01' }, 'Crow', 'bird', nil, 'meat_gristly', 1, 1, { { item = 'feather_crow', chance = 0.8, amount = 2 } }),
 }
 
 -- ████████████████████████████████████████████████████████████████████████████████
--- ████████████████████████ FRAMEWORK CONFIGURATION ███████████████████████████████
+-- ████████████████████████ THE KNIFE, THE GRADE, THE LICENSE ═════════════════════
 -- ████████████████████████████████████████████████████████████████████████████████
+Config.Skin = {
+    knife = 'skinning_knife',    -- any catalog item; not consumed, quality wears by `wear` per skin when the item is graded
+    wear = 2,
+    seconds = { small = 3, bird = 2, medium = 5, large = 8 },
+    scenario = 'WORLD_HUMAN_CROUCH_INSPECT',
+    carcass = { small = 'carcass_small', bird = 'carcass_bird', medium = 'carcass_medium' },
+}
+-- pelt grade 1..3 from the game's own judgement: animal quality (0 poor..2 high) and damage cleanliness (0 poor..2 perfect)
+Config.Grade = { weightQuality = 1.0, weightCleanliness = 1.0 }
 
---[[
-    Framework Priority (in order):
-    1. LXR-Core  (Primary)
-    2. RSG-Core  (Primary)
-    3. VORP Core (Supported / Legacy)
-    4. Standalone (Fallback)
-]]
-
-Config.Framework = 'auto' -- 'auto' or manual: 'lxr-core', 'rsg-core', 'vorp_core', 'standalone'
-
-Config.FrameworkSettings = {
-    ['lxr-core'] = {
-        resource  = 'lxr-core',
-        inventory = 'lxr-inventory',
-        menu      = 'lxr-menu',
-        input     = 'lxr-input',
-    },
-    ['rsg-core'] = {
-        resource  = 'rsg-core',
-        inventory = 'rsg-inventory',
-        menu      = 'rsg-menu',
-        input     = 'rsg-input',
-    },
-    ['vorp_core'] = {
-        resource  = 'vorp_core',
-        inventory = 'vorp_inventory',
-        menu      = 'vorp_menu',
-        input     = 'vorp_input',
-    },
-    ['standalone'] = {
-        resource  = nil,
-        inventory = nil,
-        menu      = nil,
-        input     = nil,
-    },
+Config.License = {
+    required = true,             -- skinning without `item` can be reported
+    item = 'hunting_license',
+    reportChance = 0.2,          -- to lxr-dispatch, kind below, when law is on duty
+    kind = 'lawcall',
 }
 
--- ████████████████████████████████████████████████████████████████████████████████
--- ████████████████████████ ITEMS CONFIGURATION ███████████████████████████████████
--- ████████████████████████████████████████████████████████████████████████████████
-
--- ████████████████████████████████████████████████████████████████████████████████
--- ████████████████████████ SERVER BRANDING & INFO ████████████████████████████████
--- ████████████████████████████████████████████████████████████████████████████████
-
-Config.ServerInfo = {
-    name = 'The Land of Wolves 🐺',
-    type = 'Serious Hardcore Roleplay',
-    access = 'Discord & Whitelisted',
-
-    -- Contact & Links
-    website = 'https://www.wolves.land',
-    discord = 'https://discord.gg/CrKcWdfd3A',
-    github = 'https://github.com/iBoss21',
-    store = 'https://theluxempire.tebex.io',
-
-    -- Developer Info
-    developer = 'iBoss21 / The Lux Empire',
-
-    -- Tags
-    tags = {'RedM', 'Hunting', 'Wildlife', 'Economy', 'Survival'}
-}
-
--- ████████████████████████████████████████████████████████████████████████████████
--- ████████████████████████ FRAMEWORK CONFIGURATION ███████████████████████████████
--- ████████████████████████████████████████████████████████████████████████████████
-
---[[
-    Framework Priority (in order):
-    1. LXR-Core (Primary)
-    2. RSG-Core (Primary)
-    3. VORP Core (Supported)
-    4. RedEM:RP (Optional - if detected)
-    5. QBR-Core (Optional - if detected)
-    6. QR-Core (Optional - if detected)
-    7. Standalone (Fallback)
-]]
-
-Config.Framework = 'auto' -- 'auto' or manual: 'lxr-core', 'rsg-core', 'vorp_core', 'redem_roleplay', 'qbr-core', 'qr-core', 'standalone'
-
--- Framework-specific settings
-Config.FrameworkSettings = {
-    ['lxr-core'] = {
-        resource = 'lxr-core',
-        notifications = 'ox_lib',
-        inventory = 'lxr-inventory',
-        target = 'ox_target',
-        events = {
-            server = 'lxr-core:server:%s',
-            client = 'lxr-core:client:%s',
-            callback = 'lxr-core:callback:%s'
-        }
-    },
-    ['rsg-core'] = {
-        resource = 'rsg-core',
-        notifications = 'ox_lib',
-        inventory = 'rsg-inventory',
-        target = 'ox_target',
-        events = {
-            server = 'RSGCore:Server:%s',
-            client = 'RSGCore:Client:%s',
-            callback = 'RSGCore:Callback:%s'
-        }
-    },
-    ['vorp_core'] = {
-        resource = 'vorp_core',
-        notifications = 'vorp',
-        inventory = 'vorp_inventory',
-        target = 'vorp_core',
-        events = {
-            server = 'vorp:server:%s',
-            client = 'vorp:client:%s'
-        }
-    },
-    ['redem_roleplay'] = {
-        resource = 'redem_roleplay',
-        notifications = 'redem',
-        inventory = 'redem_inventory',
-        target = 'redem_target',
-        events = {
-            server = 'redem:%s:server',
-            client = 'redem:%s:client'
-        }
-    },
-    ['qbr-core'] = {
-        resource = 'qbr-core',
-        notifications = 'ox_lib',
-        inventory = 'qbr-inventory',
-        target = 'ox_target',
-        events = {
-            server = 'QBR:Server:%s',
-            client = 'QBR:Client:%s'
-        }
-    },
-    ['qr-core'] = {
-        resource = 'qr-core',
-        notifications = 'ox_lib',
-        inventory = 'qr-inventory',
-        target = 'ox_target',
-        events = {
-            server = 'QR:Server:%s',
-            client = 'QR:Client:%s'
-        }
-    },
-    ['standalone'] = {
-        notifications = 'print',
-        inventory = 'none',
-        target = 'none'
-    }
-}
-
--- ████████████████████████████████████████████████████████████████████████████████
--- ████████████████████████ ITEMS CONFIGURATION ███████████████████████████████████
--- ████████████████████████████████████████████████████████████████████████████████
-
-Config.Items = {
-    -- Inventory Items with Sell Prices
-    ['Inv'] = {
-        ['skin_alligator']    = 0.50,
-        ['skin_snake']        = 0.15,
-        ['animal_pelt']       = 0.20,
-        ['animal_heart']      = 0.30,
-        ['animal_squirrel']   = 0.30,
-        ['skin_muskrat']      = 0.25,
-        ['animal_toad']       = 0.20,
-        ['animal_wool']       = 0.25,
-        ['meat_bird']         = 0.30,
-        ['skin_iguana']       = 0.45,
-        ['feather']           = 0.25,
-    },
-
-    -- Carry-over-shoulder items with skin and butcher options
-    ['Pickup'] = {
-        [40345436]      = {name = 'Merino Sheep',       skin = {item = 'animal_wool'}, butcher = {cash = 5, items = {animal_meat = 2}}},
-        [-1568716381]   = {name = 'Bighorn Sheep',      skin = {item = 'animal_wool'}, butcher = {cash = 5, items = {animal_meat = 2}}},
-        [-1414989025]   = {name = 'Virginia OPossum',   skin = {item = 'animal_pelt'}, butcher = {cash = 5, items = {animal_meat = 1}}},
-        [480688259]     = {name = 'Valley Coyote',      skin = {item = 'animal_pelt'}, butcher = {cash = 5, items = {animal_meat = 2}}}, -- pelt 
-        [-541762431]    = {name = 'Jackrabbit',         skin = {item = 'animal_pelt'}, butcher = {cash = 5, items = {animal_meat = 1}}},
-        [1007418994]    = {name = 'Big China Pig',      skin = {item = 'animal_pelt'}, butcher = {cash = 5, items = {animal_meat = 1}}},
-        [1458540991]    = {name = 'Raccoon',            skin = {item = 'animal_pelt'}, butcher = {cash = 5, items = {animal_meat = 1}}},
-        [-407730502]    = {name = 'Turtle',             skin = {item = 'animal_heart'},butcher = {cash = 5, items = {animal_meat = 2}}},
-        [252669332]     = {name = 'American Red Fox',   skin = {item = 'animal_pelt'}, butcher = {cash = 5, items = {animal_meat = 2}}},
-        [-1143398950]   = {name = 'Big Grey Wolf',      skin = {item = 'animal_pelt', amount = 2}, butcher = {cash = 5, items = {animal_meat = 4}}},
-        [-885451903]    = {name = 'Medium Grey Wolf',   skin = {item = 'animal_pelt'}, butcher = {cash = 5, items = {animal_meat = 3}}},
-        [-829273561]    = {name = 'Small Grey Wolf',    skin = {item = 'animal_pelt'}, butcher = {cash = 5, items = {animal_meat = 2}}},
-        [-1295720802]   = {name = 'American Alligator', skin = {item = 'skin_alligator'}, butcher = {cash = 5, items = {skin_alligator = 2}}},
-        [759906147]     = {name = 'American Beaver',    skin = {item = 'animal_pelt'}, butcher = {cash = 5, items = {animal_meat = 1}}},
-
-        -- Deer
-        [1110710183]    = {name = 'White Tail Deer',    skin = {item = 'animal_pelt', amount = 2}, butcher = {cash = 5, items = {animal_pelt = 2, animal_meat = 3}}},
-        [-1963605336]   = {name = 'Whitetail Buck',     skin = {item = 'animal_pelt', amount = 2}, butcher = {cash = 5, items = {animal_pelt = 2, animal_meat = 3}}},
-        [1755643085]    = {name = 'Pronghorn Doe',      skin = {item = 'animal_pelt', amount = 2}, butcher = {cash = 5, items = {animal_pelt = 2, animal_meat = 3}}},
-
-        -- Snakes
-        [-22968827]     = {name = 'Water Snake',              skin = {item = 'skin_snake'}, butcher = {cash = 5, items = {skin_snake = 2}}},
-        [-229688157]    = {name = 'Northern Water Snake',     skin = {item = 'skin_snake'}, butcher = {cash = 5, items = {skin_snake = 2}}},
-        [-1790499186]   = {name = 'Snake Red Boa',            skin = {item = 'skin_snake'}, butcher = {cash = 5, items = {skin_snake = 2}}},
-        [1464167925]    = {name = 'Snake Fer-De-Lance',       skin = {item = 'skin_snake'}, butcher = {cash = 5, items = {skin_snake = 2}}},
-        [846659001]     = {name = 'Black-Tailed Rattlesnake', skin = {item = 'skin_snake'}, butcher = {cash = 5, items = {skin_snake = 2}}},
-        [545068538]     = {name = 'Timber Rattlesnake',       skin = {item = 'skin_snake'}, butcher = {cash = 5, items = {skin_snake = 2}}},
-
-        -- Birds
-        [-2063183075]   = {name = 'Dominique Chicken',        skin = {item = 'animal_heart'}, butcher = {cash = 5, items = {meat_bird = 2}}},
-        [1095117488]    = {name = 'Great Blue Heron',         skin = {item = 'feather'},      butcher = {cash = 5, items = {meat_bird = 2}}},
-        [-861544272]    = {name = 'Coastal Horned Owl',       skin = {item = 'feather'},      butcher = {cash = 5, items = {meat_bird = 2}}},
-        [1416324601]    = {name = 'Ring-Necked Pheasant',     skin = {item = 'animal_heart'}, butcher = {cash = 5, items = {meat_bird = 2}}},
-        [-1003616053]   = {name = 'Mallard Duck',             skin = {item = 'animal_heart'}, butcher = {cash = 5, items = {meat_bird = 2}}},
-        [-1076508705]   = {name = 'Roseate SpoonBill',        skin = {item = 'feather', amount = 2}, butcher = {cash = 5, items = {meat_bird = 2}}},
-        [-2145890973]   = {name = 'Ferruginous Hawk',         skin = {item = 'feather', amount = 2}, butcher = {cash = 5, items = {meat_bird = 2}}},
-        [-164963696]    = {name = 'Herring Seagull',          skin = {item = 'feather', amount = 2}, butcher = {cash = 5, items = {meat_bird = 2}}},
-        [-2011226991]   = {name = 'Eastern Wild Turkey',      skin = {item = 'animal_heart'}, butcher = {cash = 5, items = {meat_bird = 2}}},
-        [1104697660]    = {name = 'Western Turkey Vulture',   skin = {item = 'feather'},      butcher = {cash = 5, items = {meat_bird = 2}}},
-        [2023522846]    = {name = 'Dominique Rooster',        skin = {item = 'animal_heart'}, butcher = {cash = 5, items = {meat_bird = 2}}},
-        [-466687768]    = {name = 'Red-Footed Booby',         skin = {item = 'feather'},      butcher = {cash = 5, items = {meat_bird = 2}}},
-        [-575340245]    = {name = 'Western Raven',            skin = {item = 'feather', amount = 2},butcher = {cash = 5, items = {meat_bird = 2}}},
-        [2079703102]    = {name = 'Greater Prairie Chicken',  skin = {item = 'animal_heart'}, butcher = {cash = 5, items = {meat_bird = 2}}},
-        [1265966684]    = {name = 'American White Pelican',   skin = {item = 'feather'},      butcher = {cash = 5, items = {meat_bird = 2}}},
-        [-1797450568]   = {name = 'Blue And Yellow Macaw',    skin = {item = 'feather'},      butcher = {cash = 5, items = {meat_bird = 2}}},
-        [-2073130256]   = {name = 'Double-Crested Cormorant', skin = {item = 'feather'},      butcher = {cash = 5, items = {meat_bird = 2}}},
-        [-564099192]    = {name = 'Whooping Crane',           skin = {item = 'feather'},      butcher = {cash = 5, items = {meat_bird = 2}}},
-        [723190474]     = {name = 'Canada Goose',             skin = {item = 'feather'},      butcher = {cash = 5, items = {meat_bird = 2}}},
-        [386506078]     = {name = 'Common Loon',              skin = {item = 'animal_heart'}, butcher = {cash = 5, items = {meat_bird = 2}}},
-        [1205982615]    = {name = 'Californian Condor',       skin = {item = 'feather', amount = 2}, butcher = {cash = 5, items = {meat_bird = 2}}},
-
-        -- Other Animals
-        [-753902995]    = {name = 'Alpine Goat',              skin = {item = 'animal_wool'},  butcher = {cash = 5, items = {animal_meat = 3}}},
-        [-1134449699]   = {name = 'American Muskrat',         skin = {item = 'skin_muskrat'}, butcher = {cash = 5, items = {animal_meat = 1}}},
-        [1654513481]    = {name = 'Panther',                 skin = {item = 'animal_pelt'},  butcher = {cash = 5, items = {animal_pelt = 2, animal_meat = 3}}},
-        [90264823]      = {name = 'Cougar',                  skin = {item = 'animal_pelt', amount = 2}, butcher = {cash = 5, items = {animal_pelt = 2, animal_meat = 3}}},
-        [-1854059305]   = {name = 'Green Iguana',            skin = {item = 'skin_iguana'},  butcher = {cash = 5, items = {animal_meat = 1}}},
-        [-593056309]    = {name = 'Desert Iguana',           skin = {item = 'skin_iguana'},  butcher = {cash = 5, items = {animal_meat = 1}}},
-        [-1433814131]   = {name = 'Legendary Maza Cougar',   skin = {item = 'animal_pelt', amount = 2}, butcher = {cash = 5, items = {animal_pelt = 2, animal_meat = 3}}},
-        [252669332]     = {name = 'American Red Fox',        skin = {item = 'animal_pelt'},  butcher = {cash = 5, items = {animal_meat = 2}}},
-        [-1170118274]   = {name = 'American Badger',         skin = {item = 'animal_pelt'},  butcher = {cash = 5, items = {animal_meat = 2}}},
-        [-1211566332]   = {name = 'Stripped Skunk',          skin = {item = 'animal_pelt'},  butcher = {cash = 5, items = {animal_meat = 2}}},
-
-        -- Large Animals (No Carry)
-        [-2004866590]   = {name = 'American Alligator Skin', butcher = {cash = 5, items = {skin_alligator = 2}}},
-        [85379810]      = {name = 'Animal Pelt',             butcher = {cash = 5, items = {animal_pelt = 2}}},
-        [1631768462]    = {name = 'Bear Pelt',               butcher = {cash = 5, items = {animal_pelt = 2}}},
-        [1780825678]    = {name = 'Black Bear Pelt',         butcher = {cash = 5, items = {animal_pelt = 2}}},
-        [-368368059]    = {name = 'Alligator Skin',          butcher = {cash = 5, items = {skin_alligator = 3}}},
-        [-1804478060]   = {name = 'Teca Gator Skin',         butcher = {cash = 5, items = {skin_alligator = 3}}},
-        [-1962493114]   = {name = 'Tatanka Bison Pelt',      butcher = {cash = 5, items = {animal_pelt = 3}}},
-    },
-}
-
--- ████████████████████████████████████████████████████████████████████████████████
--- ████████████████████████ BUTCHER LOCATIONS ██████████████████████████████████████
--- ████████████████████████████████████████████████████████████████████████████████
-
--- Butcher Locations
-Config.Butchers = {
-    ["Locations"] = {
-        ['Saint Denis Butcher'] = vector4(2819.540, -1331.2100, 45.50, 51.82),
-        ['Strawberry Butcher']  = vector4(-1753.14, -392.420, 155.25, 181.37),
-        ['Blackwater Butcher']  = vector4(-753.040, -1284.96, 42.500, 282.06),
-        ['Tumbleweed Butcher']  = vector4(-5510.371, -2947.00, -2.79, 251.54),
-        ['Valentine Butcher']   = vector4(-339.014, 767.6358, 115.56, 100.41),
-        ['Annesburg Butcher']   = vector4(2934.510, 1301.159, 43.480, 70.570),
-        ['Armadillo Butcher']   = vector4(-3691.438, -2623.152, -14.75, 0.46),
-        ['Van Horn Butcher']    = vector4(2991.844, 572.0218, 43.360, 259.52),
-        ['Rhodes Butcher']      = vector4(1297.578, -1277.589, 74.80, 146.60),
-    },
-    ['Blip']     = -1665418949, -- Set to False to Disable
-    ['PedModel'] = `S_M_M_UNIBUTCHERS_01`, -- Set to False to Disable
-}
+Config.Security = { rateLimit = { windowMs = 2000, burst = 4 }, maxDistance = 4.0, promptDistance = 2.5 }
+Config.Debug = { printBanner = true, log = true }
