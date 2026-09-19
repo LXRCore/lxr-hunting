@@ -13,7 +13,7 @@ on the entity itself, so it is skinned once, by anyone, from any client.
 ## What it does
 
 * **Skin** — one option on any dead animal in `Config.Animals` through
-  lxr-interact; needs the `skinning_knife` (graded, wears a little per skin).
+  lxr-interact; needs a blade — the `skinning_knife` (graded, wears a little per skin) or any hunting knife (`Config.Skin.knives`).
 * **Grade** — `GetPedQuality` (the animal) and `GetPedDamageCleanliness`
   (the shot) from the client, clamped and rounded on the server into a pelt
   quality of 1–3. The pelt carries it in `info.quality`; lxr-shops prices it.

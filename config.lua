@@ -91,7 +91,9 @@ Config.Animals = {
 -- ████████████████████████ THE KNIFE, THE GRADE, THE LICENSE ═════════════════════
 -- ████████████████████████████████████████████████████████████████████████████████
 Config.Skin = {
-    knife = 'skinning_knife',    -- any catalog item; not consumed, quality wears by `wear` per skin when the item is graded
+    knife = 'skinning_knife',    -- the proper tool: graded, wears by `wear` per skin
+    -- any of these opens a carcass (a hunting knife from the starter kit is enough); the first one in the satchel is used
+    knives = { 'skinning_knife', 'weapon_melee_knife', 'weapon_melee_knife_bear', 'weapon_melee_knife_civil_war', 'weapon_melee_knife_jawbone', 'weapon_melee_knife_miner' },
     wear = 2,
     seconds = { small = 3, bird = 2, medium = 5, large = 8 },
     scenario = 'WORLD_HUMAN_CROUCH_INSPECT',

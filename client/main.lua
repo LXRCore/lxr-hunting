@@ -38,7 +38,7 @@ end
 CreateThread(function()
     while GetResourceState('lxr-interact') ~= 'started' do Wait(1000) end
     exports['lxr-interact']:AddModel('lxr-hunting:animal', H.Models(), { label = Lang:t('ui.animal'), distance = Config.Security.promptDistance, options = {
-        { label = Lang:t('ui.skin'), key = 'J', item = Config.Skin.knife, canInteract = function(e) return not busy and dead(e) and not skinned(e) end, onSelect = skin },
+        { label = Lang:t('ui.skin'), key = 'J', item = { any = Config.Skin.knives or { Config.Skin.knife } }, canInteract = function(e) return not busy and dead(e) and not skinned(e) end, onSelect = skin },
     }})
 end)
 

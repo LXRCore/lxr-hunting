@@ -24,10 +24,18 @@ local function lawOnDuty()
     end
     return false
 end
+-- the first blade in the satchel; only the proper skinning knife is graded and wears
+local function knifeOf(src)
+    for _, name in ipairs(Config.Skin.knives or { Config.Skin.knife }) do
+        if LXRCore.Inventory.GetItemCount(src, name) >= 1 then return name end
+    end
+    return nil
+end
 local function wearKnife(src)
-    local it = LXRCore.Inventory.GetItem(src, Config.Skin.knife)
+    local name = knifeOf(src)
+    local it = name and LXRCore.Inventory.GetItem(src, name)
     if not it then return false end
-    local def = LXRShared.Items[Config.Skin.knife]
+    local def = LXRShared.Items[name]
     if def and def.quality and it.slot then
         local info = {} for k, v in pairs(it.info or {}) do info[k] = v end
         info.durability = math.max(0, (tonumber(info.durability) or 100) - Config.Skin.wear)
@@ -49,7 +57,7 @@ LXR.RPC.Register('lxr-hunting:skin', function(src, netId, quality, cleanliness)
     if ped == 0 or #(GetEntityCoords(ped) - GetEntityCoords(ent)) > Config.Security.maxDistance then return false, 'too_far' end
     local st = Entity(ent).state
     if st.skinned then return false, 'skinned' end
-    if LXRCore.Inventory.GetItemCount(src, Config.Skin.knife) < 1 then return false, 'no_knife', LXRShared.Items[Config.Skin.knife].label end
+    if not knifeOf(src) then return false, 'no_knife', LXRShared.Items[Config.Skin.knife].label end
     st:set('skinned', true, true)
     local grade = H.Grade(quality, cleanliness)
     local take = H.Take(id, grade)
