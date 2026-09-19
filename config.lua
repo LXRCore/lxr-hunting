@@ -121,6 +121,7 @@ Config.Skin = {
     -- any of these opens a carcass (a hunting knife from the starter kit is enough); the first one in the satchel is used
     knives = { 'skinning_knife', 'weapon_melee_knife', 'weapon_melee_knife_bear', 'weapon_melee_knife_civil_war', 'weapon_melee_knife_jawbone', 'weapon_melee_knife_miner' },
     wear = 2,
+    breakBelow = 15, breakChance = 0.06,   -- a worn knife may snap; at 0 it is gone
     seconds = { small = 3, bird = 2, medium = 5, large = 8 },
     scenario = 'WORLD_HUMAN_CROUCH_INSPECT',
     carcass = { small = 'carcass_small', bird = 'carcass_bird', medium = 'carcass_medium' },

@@ -39,6 +39,13 @@ local function wearKnife(src)
     if def and def.quality and it.slot then
         local info = {} for k, v in pairs(it.info or {}) do info[k] = v end
         info.durability = math.max(0, (tonumber(info.durability) or 100) - Config.Skin.wear)
+        local snaps = info.durability <= 0 or (info.durability < (Config.Skin.breakBelow or 0) and math.random() < (Config.Skin.breakChance or 0))
+        if snaps then
+            LXRCore.Inventory.RemoveItem(src, name, 1, it.slot, 'tool broke')
+            LXRCore.Notify(src, Lang:t('info.tool_broke', { tool = def.label }), 'warning')
+            LXRCore.Emit('lxr:tool:broke', nil, src, name)
+            return true
+        end
         LXRCore.Inventory.SetMetadata(src, it.slot, info)
     end
     return true
