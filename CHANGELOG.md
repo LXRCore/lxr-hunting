@@ -1,7 +1,7 @@
 # Changelog
 
 ## 3.0.0 — 2026-09-19
-* Every wild animal of the game (65 kinds, 92 models from the game's ped list): buck, timber wolf, the lion, javelina, armadillo, iguanas, gila monster, chipmunk, bat, toad, turtles, crab, crawfish, wild turkey, quail, condor, vulture, whooping crane, loon, pelican, gull, cormorant, booby, roseate spoonbill and the songbirds — with the pelts and feathers they give.
+* Every wild animal of the game (64 kinds, 91 models from the game's ped list): buck, timber wolf, the lion, javelina, armadillo, iguanas, gila monster, chipmunk, bat, toad, turtles, crab, crawfish, wild turkey, quail, condor, vulture, whooping crane, loon, pelican, gull, cormorant, booby, roseate spoonbill and the songbirds — with the pelts and feathers they give.
 * LXRCore v3 release line: every resource ships as 3.0.0 from here (the entries below are the road to it).
 
 ## 3.0.0 — 2026-09-18
